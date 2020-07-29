@@ -3,6 +3,7 @@ package tictactoe;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,35 +15,35 @@ public class Board {
     int xCount;
     int oCount;
 
-    public void checkStatus() {
+    /**
+     * @return true if game ends with winner or draw
+     */
+    public boolean checkStatus() {
         char winner = ' ';
-        char p0 = field.get(points[0]);
-        char p1 = field.get(points[1]);
-        char p2 = field.get(points[2]);
-        char p3 = field.get(points[3]);
-        char p4 = field.get(points[4]);
-        char p5 = field.get(points[5]);
-        char p6 = field.get(points[6]);
-        char p7 = field.get(points[7]);
-        char p8 = field.get(points[8]);
+
+        char[] cells = new char[9];
+        for (int i = 0; i < cells.length; i++) {
+            cells[i] = field.get(points[i]);
+        }
+
 
         // Check the 8 ways that match, but is not a blank ' ' match.
-        if (p0 == p1 && p1 == p2 && p0 != ' ') {
-            winner = p0;
-        } else if (p3 == p4 && p4 == p5 && p3 != ' ') {
-            winner = p3;
-        } else if (p6 == p7 && p7 == p8 && p6 != ' ') {
-            winner = p6;
-        } else if (p0 == p3 && p3 == p6 && p0 != ' ') {
-            winner = p0;
-        } else if (p1 == p4 && p4 == p7 && p1 != ' ') {
-            winner = p1;
-        } else if (p2 == p5 && p5 == p8 && p2 != ' ') {
-            winner = p2;
-        } else if (p0 == p4 && p4 == p8 && p0 != ' ') {
-            winner = p0;
-        } else if (p2 == p4 && p4 == p6 && p2 != ' ') {
-            winner = p2;
+        if (cells[0] == cells[1] && cells[1] == cells[2] && cells[0] != ' ') {
+            winner = cells[0];
+        } else if (cells[3] == cells[4] && cells[4] == cells[5] && cells[3] != ' ') {
+            winner = cells[3];
+        } else if (cells[6] == cells[7] && cells[7] == cells[8] && cells[6] != ' ') {
+            winner = cells[6];
+        } else if (cells[0] == cells[3] && cells[3] == cells[6] && cells[0] != ' ') {
+            winner = cells[0];
+        } else if (cells[1] == cells[4] && cells[4] == cells[7] && cells[1] != ' ') {
+            winner = cells[1];
+        } else if (cells[2] == cells[5] && cells[5] == cells[8] && cells[2] != ' ') {
+            winner = cells[2];
+        } else if (cells[0] == cells[4] && cells[4] == cells[8] && cells[0] != ' ') {
+            winner = cells[0];
+        } else if (cells[2] == cells[4] && cells[4] == cells[6] && cells[2] != ' ') {
+            winner = cells[2];
         } else {
             boolean gameFinished = true;
 
@@ -52,12 +53,46 @@ public class Board {
                     gameFinished = false;
                 }
             }
-            System.out.println(gameFinished ? "Draw" : "Game not finished");
+            if (gameFinished) {
+                System.out.println("Draw");
+                return true;
+            } else {
+                System.out.println("Game not finished");
+            }
         }
 
         if (winner != ' ') {
             System.out.println(winner + " wins");
+            return true;
         }
+
+        return false;
+    }
+
+    public void aiMoveEasy() {
+        System.out.println("Making move level \"easy\"");
+        Random rand = new Random();
+        boolean valid = false;
+
+        while (!valid) {
+            int x = rand.nextInt(3) + 1;
+            int y = rand.nextInt(3) + 1;
+
+            Point p = new Point(x, y);
+            if (field.get(p) == ' ') {
+                field.put(p, 'O');
+                valid = true;
+            }
+        }
+
+    }
+
+    public int getxCount() {
+        return xCount;
+    }
+
+    public int getoCount() {
+        return oCount;
     }
 
     public void enterCoordinate(Scanner sc) {
