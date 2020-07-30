@@ -14,6 +14,32 @@ public class Board {
     Map<Point, Character> field;
     int xCount;
     int oCount;
+    String xMove = "";
+    String oMove = "";
+
+    public Board() {
+        xCount = 0;
+        oCount = 0;
+        points = new Point[9];
+        points[0] = new Point(1, 3);
+        points[1] = new Point(2, 3);
+        points[2] = new Point(3, 3);
+        points[3] = new Point(1, 2);
+        points[4] = new Point(2, 2);
+        points[5] = new Point(3, 2);
+        points[6] = new Point(1, 1);
+        points[7] = new Point(2, 1);
+        points[8] = new Point(3, 1);
+        field = new HashMap<>();
+    }
+
+
+    public void initializeBoard(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            field.put(points[i], s.charAt(i) == '_' ? ' ' : s.charAt(i));
+        }
+    }
+
 
     /**
      * @return true if game ends with winner or draw
@@ -25,7 +51,6 @@ public class Board {
         for (int i = 0; i < cells.length; i++) {
             cells[i] = field.get(points[i]);
         }
-
 
         // Check the 8 ways that match, but is not a blank ' ' match.
         if (cells[0] == cells[1] && cells[1] == cells[2] && cells[0] != ' ') {
@@ -69,7 +94,65 @@ public class Board {
         return false;
     }
 
-    public void aiMoveEasy() {
+
+    public boolean inputCommand(Scanner scanner) {
+        while (true) {
+            System.out.print("Input command: ");
+            String[] args = scanner.nextLine().split("\\s+");
+            if (args[0].equals("exit")) {
+                return false;
+            } else if (args.length == 3 && args[0].equals("start")) {
+                switch (args[1]) {
+                    case "easy":
+                        xMove = "aiEasy";
+                        break;
+                    case "user":
+                        xMove = "user";
+                        break;
+                }
+                switch (args[2]) {
+                    case "easy":
+                        oMove = "aiEasy";
+                        break;
+                    case "user":
+                        oMove = "user";
+                        break;
+                }
+                playGame(scanner);
+                return true;
+            } else {
+                System.out.println("Bad parameters!");
+            }
+        }
+    }
+
+
+    public void playGame(Scanner sc) {
+        initializeBoard("_________");
+        while (true) {
+            if (getxCount() <= getoCount()) {    // 'X' turn
+                if (xMove.equals("user")) {
+                    userMove(sc);
+                } else {
+                    aiMoveEasy('X');
+                }
+            } else {
+                if (oMove.equals("user")) {
+                    userMove(sc);
+                } else {
+                    aiMoveEasy('O');    //    'O' turn
+                }
+            }
+
+            drawBoard();
+            if (checkStatus()) {
+                break;
+            }
+        }
+    }
+
+
+    public void aiMoveEasy(char letter) {
         System.out.println("Making move level \"easy\"");
         Random rand = new Random();
         boolean valid = false;
@@ -80,22 +163,13 @@ public class Board {
 
             Point p = new Point(x, y);
             if (field.get(p) == ' ') {
-                field.put(p, 'O');
+                field.put(p, letter);
                 valid = true;
             }
         }
-
     }
 
-    public int getxCount() {
-        return xCount;
-    }
-
-    public int getoCount() {
-        return oCount;
-    }
-
-    public void enterCoordinate(Scanner sc) {
+    public void userMove(Scanner sc) {
         Pattern pattern13 = Pattern.compile("[1-3] [1-3]");    // This is valid case
         Pattern pattern09 = Pattern.compile("\\d \\d");     // Digits, but not in range
         boolean valid = false;
@@ -126,27 +200,6 @@ public class Board {
         }
     }
 
-    public Board() {
-        xCount = 0;
-        oCount = 0;
-        points = new Point[9];
-        points[0] = new Point(1, 3);
-        points[1] = new Point(2, 3);
-        points[2] = new Point(3, 3);
-        points[3] = new Point(1, 2);
-        points[4] = new Point(2, 2);
-        points[5] = new Point(3, 2);
-        points[6] = new Point(1, 1);
-        points[7] = new Point(2, 1);
-        points[8] = new Point(3, 1);
-        field = new HashMap<>();
-    }
-
-    public void initializeBoard(String s) {
-        for (int i = 0; i < s.length(); i++) {
-            field.put(points[i], s.charAt(i) == '_' ? ' ' : s.charAt(i));
-        }
-    }
 
     public void drawBoard() {
         // Get count of X's and O's to know whose turn it is
@@ -167,5 +220,14 @@ public class Board {
         System.out.println("| " + field.get(points[6]) + " " + field.get(points[7]) + " " + field.get(points[8]) + " |");
         System.out.println("---------");
     }
+
+    public int getxCount() {
+        return xCount;
+    }
+
+    public int getoCount() {
+        return oCount;
+    }
+
 
 }

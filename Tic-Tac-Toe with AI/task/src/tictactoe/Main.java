@@ -13,16 +13,9 @@ public class Main {
         board.initializeBoard(initialBoard);
         board.drawBoard();
 
-        while (true) {
-            if (board.getxCount() <= board.getoCount()) {
-                board.enterCoordinate(sc);  //   Human 'X' turn
-            } else {
-                board.aiMoveEasy();    // AI 'O' turn
-            }
-            board.drawBoard();
-            if (board.checkStatus()) {
-                break;
-            }
+        boolean loop = true;
+        while (loop) {
+            loop = board.inputCommand(sc);
         }
 
     }
